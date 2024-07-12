@@ -1,0 +1,81 @@
+dotnet new console -n "EF_Core_1"
+cd EF_Core_1
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+dotnet add package Microsoft.EntityFrameworkCore.Design
+dotnet add package Microsoft.Extensions.Configuration.Json
+dotnet tool install --global dotnet-ef
+
+dotnet add package ConsoleTables --version 2.4.2
+
+dotnet new console -n "ADO_1"
+cd ADO_1
+dotnet add package Microsoft.Data.SqlClient
+
+mkdir webapp1
+cd webapp1
+dotnet new web
+dotnet run
+
+mkdir blazorapp1c
+cd blazorapp1
+dotnet new blazor
+
+dotnet-ef dbcontext scaffold "Data Source=ETL-SSIS-D-02;Initial Catalog=kladr;Integrated Security=True;Pooling=True;Trust Server Certificate=True" Microsoft.EntityFrameworkCore.SqlServer
+
+dotnet new webapi
+dotnet watch run
+
+--------------------------------------------
+solution project files
+sln1
+	console
+	webapi
+	models
+		model1-1.cs
+		model1-2.cs
+		dbcontxt1.cs
+		model2-1.cs
+		model2-2.cs
+		dbcontxt2.cs
+		
+mkdir sln1
+cd sln1
+dotnet new sln -n sln1
+dotnet new console -o console
+-- dotnet new webapi -o webapi
+dotnet new api -o api
+dotnet new console -o dbmodels
+
+dotnet sln add console\console.csproj
+dotnet sln add webapi\webapi.csproj
+dotnet sln add dbmodels\dbmodels.csproj
+
+cd dbmodels
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+dotnet add package Microsoft.EntityFrameworkCore.Design
+dotnet add package Microsoft.Extensions.Configuration.Json
+
+cd ..
+cd console
+dotnet add package ConsoleTables
+
+в проект console нужно добавить ссылку на проект dbmodel
+dotnet add reference ../dbmodel/dbmodel.csproj
+dotnet build sln1.sln    // Build whole solution
+--> скопировать appsettings.json в sln1\webapi\
+
+cd dbmodels
+dotnet-ef dbcontext scaffold "Data Source=ETL-SSIS-D-02;Initial Catalog=AdventureWorksDW2017;Integrated Security=True;Pooling=True;Trust Server Certificate=True" Microsoft.EntityFrameworkCore.SqlServer
+
+dotnet new classlib -n dbmodelslib
+dotnet sln add dbmodelslib\dbmodelslib.csproj
+dotnet sln remove dbmodels\dbmodels.csproj
+
+cd dbmodelslib
+dotnet ef migrations add init
+--> dbmodelslib.csproj ->   <InvariantGlobalization>false...
+dotnet ef database update
+
+dotnet add package Serilog
+dotnet add package Serilog.Sinks.Console
+dotnet add package Serilog.Sinks.File
