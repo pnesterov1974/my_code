@@ -3,7 +3,7 @@ using mssqlDb;
 
 Console.WriteLine("Hello, World!");
 
-string connStr = "Data Source=ETL-SSIS-D-02;Initial Catalog=kladr;Integrated Security=True;Pooling=True;Trust Server Certificate=True;Connection Timeout=500";
+string connStr = "Data Source=;Initial Catalog=kladr;Integrated Security=True;Pooling=True;Trust Server Certificate=True;Connection Timeout=500";
 
 MsSqlDbObjectOption socrbaseOptions = new MsSqlDbObjectOption()
 {
